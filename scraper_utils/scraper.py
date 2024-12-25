@@ -63,12 +63,10 @@ class Scraper:
             # Assuming `download_image` is a method in your class
             img_path = self.download_image(img_url, title)
 
-            product = Product(product_title=title, product_price=price, path_to_image=img_path)
-            self.products.append(product)
-
-            # if should_update_product(title, price):
-
-                # cache_product(title, price)
+            if should_update_product(title, price):
+                product = Product(product_title=title, product_price=price, path_to_image=img_path)
+                self.products.append(product)
+                cache_product(title, price)
 
     @timing
     def download_image(self, url: str, title: str) -> str:

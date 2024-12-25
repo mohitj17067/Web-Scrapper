@@ -1,9 +1,8 @@
-import redis
 import time
-from constants import REDIS_HOST, REDIS_PORT, CACHE_EXPIRY
+from cachetools import LRUCache
 
-# Initialize Redis
-cache = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+# Initialize LRU Cache (You can adjust the size based on your needs)
+cache = LRUCache(maxsize=100)  # Setting a maximum size of 100 items for the cache
 
 def timing(func):
     def wrapper(*args, **kwargs):
@@ -17,8 +16,9 @@ def timing(func):
 @timing
 def should_update_product(title: str, price: float) -> bool:
     cached_price = cache.get(title)
-    return cached_price is None or float(cached_price) != price
+    return cached_price is None or cached_price != price
 
 @timing
 def cache_product(title: str, price: float):
-    cache.set(title, price, ex=CACHE_EXPIRY)
+    # Cache the product, using the title as the key and price as the value
+    cache[title] = price
